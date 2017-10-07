@@ -1,19 +1,15 @@
 def sort(lst):
-    # Append smaller number to prevent from falling into negative indices:
-    lst.append(min(lst) - 1)
-    # Iterate elements:
-    for i in range(1, len(lst) - 1):
-        ind = i
-        # Search for correct position:
-        while lst[i] < lst[ind - 1]:
-            ind -= 1
-        if ind == -1:
-            # Insert into first position
-            lst = [lst[i]] + lst[:i] + lst[i+1:]
+    new_evens, new_odds = [], []
+    for el in lst:
+        target = new_evens if el % 2 == 0 else new_odds
+        if len(target) == 0 or el > target[-1]:
+            target.append(el)
         else:
-            # ... any other position
-            lst = lst[:ind] + [lst[i]] + lst[ind: i] + lst[i+1:]
-    return lst[:-1]
+            ind = 0
+            while el > target[ind]:
+                ind += 1
+            target.insert(ind, el)
+    return new_evens + list(reversed(new_odds))
 
 
 if __name__ == "__main__":
