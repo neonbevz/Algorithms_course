@@ -1,26 +1,39 @@
-def count_inversions(data, x):
+def count_inversions(data, user_1):
     inversions = []
-    for user_ind in range(len(data)):
-        if user_ind == x:
+    for user_2 in range(len(data)):
+        if user_2 == user_1:
             continue
         else:
-            inversions.append([user_ind, count_inv(data[x], data[user_ind])])
-    return inversions
+            array = [data[user_2][data[user_1].index(mov)] for mov in range(1, len(data[user_1]) + 1)]
+            inversions.append([user_2, merge_count(array, 0, len(array))])
+    return sorted(inversions, key=lambda x: x[1])
 
 
-def count_inv(arr1, arr2):
-    arr = [arr2.find(mov) for mov in arr1]
+def merge_count(array, start, end):
     invs = 0
-
+    if end - start >= 2:
+        mid_ind = (end - start) // 2 + start
+        invs += merge_count(array, start, mid_ind)
+        invs += merge_count(array, mid_ind, end)
+        invs += merge(array, start, end, mid_ind)
     return invs
 
 
-if __name__ == "__main__":
-    arr = [[3, 2, 10, 6, 9, 1, 5, 7, 4, 8],
-           [2, 10, 8, 9, 5, 4, 3, 7, 6, 1],
-           [2, 4, 9, 6, 10, 7, 5, 1, 3, 8],
-           [3, 9, 10, 6, 7, 4, 1, 2, 5, 8],
-           [7, 3, 8, 6, 5, 4, 10, 1, 2, 9]]
-    print(count_inversions(arr, 0) == [[2, 14], [3, 16], [4, 19], [1, 22]])
-    print(count_inversions(arr, 1) == [[3, 16], [0, 22], [2, 24], [4, 31]])
-
+def merge(array, start, end, mid):
+    invs = 0
+    new_arr = []
+    temp_left = array[start:mid]
+    temp_right = array[mid:end]
+    for i in range(end - start):
+        if len(temp_right) == 0:
+            new_arr.append(temp_left.pop(0))
+        elif len(temp_left) == 0:
+            new_arr.append(temp_right.pop(0))
+            invs += mid - ((mid-start) - len(temp_left)) - start
+        elif temp_left[0] >= temp_right[0]:
+            new_arr.append(temp_right.pop(0))
+            invs += mid - ((mid-start) - len(temp_left)) - start
+        else:
+            new_arr.append(temp_left.pop(0))
+    array[start:end] = new_arr
+    return invs
